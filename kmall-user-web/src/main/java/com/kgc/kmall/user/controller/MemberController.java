@@ -11,12 +11,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
-@Controller
+@RestController
 public class MemberController {
     @Reference
     MemberService memberService;
     @RequestMapping("/")
-    @ResponseBody
     public List<Member> selectAllMember(){
         List<Member> members = memberService.selectAllMember();
         return members;
