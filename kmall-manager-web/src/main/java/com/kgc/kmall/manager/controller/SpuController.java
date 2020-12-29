@@ -80,7 +80,7 @@ public class SpuController {
         return integer>0?"success":"fail";
     }
     @ApiOperation("显示销售属性和属性值")
-    @PostMapping("/spuSaleAttrList")
+    @GetMapping("/spuSaleAttrList")
     @ApiImplicitParam(name = "spuId",value = "spuId")
 //    @RequestMapping("/spuSaleAttrList")
     public List<PmsProductSaleAttr> spuSaleAttrList(Long spuId){

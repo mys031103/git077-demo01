@@ -70,14 +70,16 @@ public class SpuServiceImpl implements SpuService {
 
     @Override
     public List<PmsProductSaleAttr> spuSaleAttrList(Long spuId) {
-        PmsProductSaleAttrExample example = new PmsProductSaleAttrExample();
-        example.createCriteria().andProductIdEqualTo(spuId);
-        ;
+        PmsProductSaleAttrExample example=new PmsProductSaleAttrExample();
+        PmsProductSaleAttrExample.Criteria criteria = example.createCriteria();
+        criteria.andProductIdEqualTo(spuId);
         List<PmsProductSaleAttr> pmsProductSaleAttrList = pmsProductSaleAttrMapper.selectByExample(example);
         for (PmsProductSaleAttr pmsProductSaleAttr : pmsProductSaleAttrList) {
-            PmsProductSaleAttrValueExample example1 = new PmsProductSaleAttrValueExample();
-            example1.createCriteria().andSaleAttrIdEqualTo(pmsProductSaleAttr.getSaleAttrId());
-            example1.createCriteria().andProductIdEqualTo(spuId);
+            PmsProductSaleAttrValueExample example1=new PmsProductSaleAttrValueExample();
+            PmsProductSaleAttrValueExample.Criteria criteria1 = example1.createCriteria();
+            criteria1.andSaleAttrIdEqualTo(pmsProductSaleAttr.getSaleAttrId());
+            criteria1.andProductIdEqualTo(spuId);
+
             List<PmsProductSaleAttrValue> pmsProductSaleAttrValueList = pmsProductSaleAttrValueMapper.selectByExample(example1);
             pmsProductSaleAttr.setSpuSaleAttrValueList(pmsProductSaleAttrValueList);
         }
@@ -90,6 +92,12 @@ public class SpuServiceImpl implements SpuService {
         example.createCriteria().andProductIdEqualTo(spuId);
         List<PmsProductImage> pmsProductImages = pmsProductImageMapper.selectByExample(example);
         return pmsProductImages;
+    }
+
+    @Override
+    public List<PmsProductSaleAttr> spuSaleAttrListIsCheck(Long spuId, Long skuId) {
+        List<PmsProductSaleAttr> pmsProductSaleAttrList = pmsProductSaleAttrMapper.spuSaleAttrListIsCheck(spuId, skuId);
+        return pmsProductSaleAttrList;
     }
 
 

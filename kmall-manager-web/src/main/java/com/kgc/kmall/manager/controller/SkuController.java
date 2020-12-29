@@ -6,7 +6,6 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
 import org.apache.dubbo.config.annotation.Reference;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 @CrossOrigin
@@ -15,11 +14,10 @@ import org.springframework.web.bind.annotation.*;
 public class SkuController {
     @Reference
     SkuService skuService;
-
-    @ApiOperation("保存sku")
+    @ApiOperation("保存sku商品销售属性")
     @PostMapping("/saveSkuInfo")
-    @ApiImplicitParam(name = "PmsSkuInfo",value = "skuInfo")
-//    @RequestMapping("/saveSkuInfo")
+    @ApiImplicitParam(name = "PmsSkuInfo",value = "skuInfo实体类对象",required = true)
+    /* @RequestMapping("/saveSkuInfo")*/
     public String saveSkuInfo(@RequestBody PmsSkuInfo skuInfo){
         String result = skuService.saveSkuInfo(skuInfo);
         return result;
