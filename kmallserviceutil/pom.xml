@@ -18,6 +18,11 @@
     <!--y依赖-->
     <dependencies>
         <dependency>
+            <groupId>redis.clients</groupId>
+            <artifactId>jedis</artifactId>
+        </dependency>
+
+        <dependency>
             <groupId>com.kgc.kmall</groupId>
             <artifactId>kmall-common-util</artifactId>
             <version>1.0-SNAPSHOT</version>
