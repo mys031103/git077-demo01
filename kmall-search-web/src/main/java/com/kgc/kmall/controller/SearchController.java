@@ -27,7 +27,7 @@ public class SearchController {
     public String list(PmsSearchSkuParam pmsSearchSkuParam, Model model){
     //进行数据查询
         List<PmsSearchSkuInfo> list = searchService.list(pmsSearchSkuParam);
-        model.addAttribute("skuLsInfoList",list);
+
         //给平台属性去重
         Set<Long> valueIdSet=new HashSet<>();
         for (PmsSearchSkuInfo pmsSearchSkuInfo : list) {
@@ -38,6 +38,7 @@ public class SearchController {
           }
         }
         System.out.println(valueIdSet);
+        model.addAttribute("skuLsInfoList",list);
         return "list";
     }
 }
