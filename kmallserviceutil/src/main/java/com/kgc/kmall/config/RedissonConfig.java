@@ -13,7 +13,6 @@ import org.springframework.context.annotation.Configuration;
 public class RedissonConfig {
     @Value("${spring.redis.host}")
     private String host;
-
     @Value("${spring.redis.port}")
     private String port;
     @Value("0")
