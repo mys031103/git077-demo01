@@ -7,11 +7,14 @@ import com.kgc.kmall.bean.PmsBaseAttrValueExample;
 import com.kgc.kmall.manager.mapper.PmsBaseAttrInfoMapper;
 import com.kgc.kmall.manager.mapper.PmsBaseAttrValueMapper;
 import com.kgc.kmall.service.AttrService;
+
+import org.apache.commons.lang3.StringUtils;
 import org.apache.dubbo.config.annotation.Service;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
 import java.util.List;
+import java.util.Set;
 
 @Component
 @Service
@@ -21,6 +24,7 @@ public class AttrServiceImpl implements AttrService {
     PmsBaseAttrInfoMapper pmsBaseAttrInfoMapper;
     @Resource
     PmsBaseAttrValueMapper pmsBaseAttrValueMapper;
+
     @Override
     public List<PmsBaseAttrInfo> attrInfoList(Long catalog3Id) {
         PmsBaseAttrInfoExample pmsBaseAttrInfoExample = new PmsBaseAttrInfoExample();
@@ -28,7 +32,7 @@ public class AttrServiceImpl implements AttrService {
         List<PmsBaseAttrInfo> pmsBaseAttrInfos = pmsBaseAttrInfoMapper.selectByExample(pmsBaseAttrInfoExample);
         //为每个平台属性添加平台属性值
         for (PmsBaseAttrInfo pmsBaseAttrInfo : pmsBaseAttrInfos) {
-            PmsBaseAttrValueExample pmsBaseAttrValueExample=new PmsBaseAttrValueExample();
+            PmsBaseAttrValueExample pmsBaseAttrValueExample = new PmsBaseAttrValueExample();
             pmsBaseAttrValueExample.createCriteria().andAttrIdEqualTo(pmsBaseAttrInfo.getId());
             List<PmsBaseAttrValue> pmsBaseAttrValues = pmsBaseAttrValueMapper.selectByExample(pmsBaseAttrValueExample);
             pmsBaseAttrInfo.setAttrValueList(pmsBaseAttrValues);
@@ -76,6 +80,16 @@ public class AttrServiceImpl implements AttrService {
             pmsBaseAttrValues = pmsBaseAttrValueMapper.selectByExample(null);
         }
         return pmsBaseAttrValues;
+    }
+
+    @Override
+    public List<PmsBaseAttrInfo> selectAttrInfoValueListByValueId(Set<Long> valueIds) {
+        //转换数据类型
+        String join = StringUtils.join(valueIds);
+        join = join.substring(1, join.length() - 1);
+        System.out.println(join);
+        List<PmsBaseAttrInfo> pmsBaseAttrInfos = pmsBaseAttrInfoMapper.selectAttrInfoValueListByValueId(join);
+        return pmsBaseAttrInfos;
     }
 
 }
