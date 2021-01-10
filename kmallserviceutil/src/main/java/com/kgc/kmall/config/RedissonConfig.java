@@ -1,7 +1,6 @@
 package com.kgc.kmall.config;
 
 
-import com.kgc.kmall.util.RedisUtil;
 import org.redisson.Redisson;
 import org.redisson.api.RedissonClient;
 import org.redisson.config.Config;
@@ -13,20 +12,9 @@ import org.springframework.context.annotation.Configuration;
 public class RedissonConfig {
     @Value("${spring.redis.host}")
     private String host;
-    @Value("${spring.redis.port}")
-    private String port;
-    @Value("0")
-    private Integer database;
 
- /* @Bean
-    public RedisUtil redisUtil(){
-        if(host.equals("disabled")){
-            return null;
-        }
-        RedisUtil redisUtil=new RedisUtil();
-        redisUtil.initPool(host,port,database);
-        return redisUtil;
-    }*/
+    @Value("${spring.redis.port:6379}")
+    private String port;
 
     @Bean
     public RedissonClient redissonClient(){
