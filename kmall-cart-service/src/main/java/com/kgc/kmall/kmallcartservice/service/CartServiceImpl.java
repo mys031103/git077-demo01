@@ -7,6 +7,8 @@ import com.kgc.kmall.kmallcartservice.mapper.OmsCartItemMapper;
 import com.kgc.kmall.service.CartService;
 import com.kgc.kmall.util.RedisUtil;
 import org.apache.dubbo.config.annotation.Service;
+import org.redisson.api.RLock;
+import org.redisson.api.RedissonClient;
 import org.springframework.stereotype.Component;
 import redis.clients.jedis.Jedis;
 
@@ -24,6 +26,8 @@ public class CartServiceImpl implements CartService {
     OmsCartItemMapper omsCartItemMapper;
     @Resource
     RedisUtil redisUtil;
+
+
 
     @Override
     public OmsCartItem ifCartExistByUser(String memberId, long skuId) {
@@ -72,23 +76,61 @@ public class CartServiceImpl implements CartService {
     public List<OmsCartItem> cartList(String memberId) {
         Jedis jedis = null;
         List<OmsCartItem> omsCartItems = new ArrayList<>();
-        try {
-            jedis = redisUtil.getJedis();
+            try {
+                jedis = redisUtil.getJedis();
+                List<String> hvals = jedis.hvals("user:" + memberId + ":cart");
+                if(hvals!=null&&hvals.size()>0){
+                for (String hval : hvals) {
+                    OmsCartItem omsCartItem = JSON.parseObject(hval, OmsCartItem.class);
+                    omsCartItems.add(omsCartItem);
+                }
+            }else {
+                    OmsCartItemExample example=new OmsCartItemExample();
+                    OmsCartItemExample.Criteria criteria = example.createCriteria();
+                    criteria.andMemberIdEqualTo(Long.parseLong(memberId));
+                     omsCartItems = omsCartItemMapper.selectByExample(example);
+                     flushCartCache(memberId);
+                }
+            }catch (Exception e){
+                // 处理异常，记录系统日志
+                e.printStackTrace();
+                //String message = e.getMessage();
+                //logService.addErrLog(message);
+                return null;
+            }finally {
+                jedis.close();
+            }
+
+        return omsCartItems;
+    }
+    @Override
+    public void checkCart(OmsCartItem omsCartItem) {
+        OmsCartItemExample example=new OmsCartItemExample();
+        OmsCartItemExample.Criteria criteria = example.createCriteria();
+        criteria.andMemberIdEqualTo(omsCartItem.getMemberId());
+        criteria.andProductSkuIdEqualTo(omsCartItem.getProductSkuId());
+        omsCartItemMapper.updateByExampleSelective(omsCartItem,example);
+
+        flushCartCache(omsCartItem.getMemberId().toString());
+    }
+  /*  @Override
+    public void flushCartCache2(String memberId) {
+        List<OmsCartItem> omsCartItems = new ArrayList<>();
+        // 同步到redis缓存中
+
+            Jedis jedis = redisUtil.getJedis();
+            Map<String, String> map = new HashMap<>();
             List<String> hvals = jedis.hvals("user:" + memberId + ":cart");
             for (String hval : hvals) {
                 OmsCartItem omsCartItem = JSON.parseObject(hval, OmsCartItem.class);
                 omsCartItems.add(omsCartItem);
+                map.put(omsCartItem.getProductSkuId().toString(), JSON.toJSONString(omsCartItem));
             }
-        }catch (Exception e){
-            // 处理异常，记录系统日志
-            e.printStackTrace();
-            //String message = e.getMessage();
-            //logService.addErrLog(message);
-            return null;
-        }finally {
+            jedis.del("gwc:" + memberId + ":gwc");
+            jedis.hmset("gwc:" + memberId + ":gwc", map);
             jedis.close();
-        }
 
-        return omsCartItems;
-    }
+    }*/
+
+
 }
